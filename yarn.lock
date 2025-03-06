@@ -1354,7 +1354,7 @@
   resolved "https://registry.yarnpkg.com/@vanilla-extract/private/-/private-1.0.6.tgz#f10bbf3189f7b827d0bd7f804a6219dd03ddbdd4"
   integrity sha512-ytsG/JLweEjw7DBuZ/0JCN4WAQgM9erfSTdS1NQY778hFQSZ6cfCDEZZ0sgVm4k54uNz6ImKB33AYvSR//fjxw==
 
-"@wagmi/connectors@5.7.8":
+"@wagmi/connectors@5.7.8", "@wagmi/connectors@^5.7.8":
   version "5.7.8"
   resolved "https://registry.yarnpkg.com/@wagmi/connectors/-/connectors-5.7.8.tgz#a6886a3a0598da7fe6b0fc20ed7944717a6700fc"
   integrity sha512-idLCc+GQ/GcGgxakEMC7/NSbpD6r1GB07lfDyEjvI5TMzl18pOZhKiqOTENzNi3hDas6ZMvS1xaGwrWufsb1rA==
@@ -1366,7 +1366,7 @@
     "@walletconnect/ethereum-provider" "2.17.0"
     cbw-sdk "npm:@coinbase/wallet-sdk@3.9.3"
 
-"@wagmi/core@2.16.5":
+"@wagmi/core@2.16.5", "@wagmi/core@^2.16.5":
   version "2.16.5"
   resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-2.16.5.tgz#ae451daba4d84402f4ddf7b1279efeab46f3567f"
   integrity sha512-7WlsxIvcS2WXO/8KnIkutCfY6HACsPsEuZHoYGu2TbwM7wlJv2HmR9zSvmyeEDsTBDPva/tuFbmJo4HJ9llkWA==
@@ -5498,6 +5498,20 @@ vconsole@^3.15.1:
     core-js "^3.11.0"
     mutation-observer "^1.0.3"
 
+viem@2.x:
+  version "2.23.6"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-2.23.6.tgz#05d9b49cc0b5130707ecdcd1b5c141f72b68606c"
+  integrity sha512-+yUeK8rktbGFQaLIvY4Tki22HUjian9Z4eKGAUT72RF9bcfkYgK8CJZz9P83tgoeLpiTyX3xcBM4xJZrJyKmsA==
+  dependencies:
+    "@noble/curves" "1.8.1"
+    "@noble/hashes" "1.7.1"
+    "@scure/bip32" "1.6.2"
+    "@scure/bip39" "1.5.4"
+    abitype "1.0.8"
+    isows "1.0.6"
+    ox "0.6.7"
+    ws "8.18.0"
+
 viem@^2.1.1:
   version "2.21.49"
   resolved "https://registry.yarnpkg.com/viem/-/viem-2.21.49.tgz#528d5e54747ba3125041cd753459a4ce673aaaa6"
@@ -5511,20 +5525,6 @@ viem@^2.1.1:
     isows "1.0.6"
     ox "0.1.2"
     webauthn-p256 "0.0.10"
-    ws "8.18.0"
-
-viem@^2.23.6:
-  version "2.23.6"
-  resolved "https://registry.yarnpkg.com/viem/-/viem-2.23.6.tgz#05d9b49cc0b5130707ecdcd1b5c141f72b68606c"
-  integrity sha512-+yUeK8rktbGFQaLIvY4Tki22HUjian9Z4eKGAUT72RF9bcfkYgK8CJZz9P83tgoeLpiTyX3xcBM4xJZrJyKmsA==
-  dependencies:
-    "@noble/curves" "1.8.1"
-    "@noble/hashes" "1.7.1"
-    "@scure/bip32" "1.6.2"
-    "@scure/bip39" "1.5.4"
-    abitype "1.0.8"
-    isows "1.0.6"
-    ox "0.6.7"
     ws "8.18.0"
 
 wagmi@^2.14.12:
