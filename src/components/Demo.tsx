@@ -1,5 +1,5 @@
 "use client";
-
+//@ts-nocheck
 import { useEffect, useCallback, useState, useMemo } from "react";
 import { Input } from "../components/ui/input";
 import { signIn, signOut, getCsrfToken } from "next-auth/react";
@@ -100,6 +100,21 @@ export default function Demo(
   const handleSwitchChain = useCallback(() => {
     switchChain({ chainId: nextChain.id });
   }, [switchChain, nextChain.id]);
+
+  useEffect(() => {
+    // @ts-expect-error error window
+    const provider = window.ethereum 
+
+    //链接钱包 获得钱包地址
+    const connectAndgetAccount = async () => {
+      const accounts = await provider.request({
+        method: "eth_requestAccounts", params: []
+      })
+      console.log('accounts:', accounts)
+    }
+
+    connectAndgetAccount()
+  }, [])
 
   useEffect(() => {
     const load = async () => {
