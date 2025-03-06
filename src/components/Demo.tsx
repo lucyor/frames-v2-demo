@@ -126,7 +126,7 @@ export default function Demo(
       const ethersProvider = new BrowserProvider(walletProvider)
       return await ethersProvider.getSigner()
     }
-    function checkSign(message: any, signature: any) {
+    function checkSign(message: string, signature: string) {
       const recoveredAddress = ethers.verifyMessage(message, signature);
       console.log(recoveredAddress)
     }
@@ -150,14 +150,8 @@ export default function Demo(
       const abi = ['function taskSign(string memory comment) external']
       const contract = '0x17A0ac4bbAd952F32093b8F63eEE85c4DE56E3EA'
       const catsign = new Contract(contract, abi, signer);
-      let tx = '' as any
-      if (ismetamask) {
-        tx = await catsign.taskSign(comment, { gasPrice: ethers.parseUnits("0.0201", "gwei") });
-      } else {
-        tx = await catsign.taskSign(comment);
-      }
-      console.log('tx:', tx)
-      console.log(tx.hash)
+      const tx = await catsign.taskSign(comment);
+     
       return tx.hash;
     }
     (async()=>{
