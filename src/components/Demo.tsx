@@ -126,24 +126,18 @@ export default function Demo(
     }
   }, [isSDKLoaded]);
   // 初始化连接器
-  useEffect(() => {
-    const init = async () => {
-      try {
-        const res = await connect(config, { connector: injected() })
-        console.log( `connect res`,res )
-        const account = getAccount(config)
-        console.log(`get Account`,account)
-        setAccount(account.address)
-      } catch (error) {
-        console.error('Connection failed:', error)
-      }
+  const init = async () => {
+    try {
+      console.log(`init`)
+      const res = await connect(config, { connector: injected() })
+      console.log(`connect res`, res)
+      const account = getAccount(config)
+      console.log(`get Account`, account)
+      setAccount(account.address)
+    } catch (error) {
+      console.error('Connection failed:', error)
     }
-
-    init()
-    return () => {
-     
-    }
-  }, [])
+  }
   useEffect(() => {
     const vConsole = new VConsole()
     return () => {
@@ -178,6 +172,13 @@ export default function Demo(
 
   return (
     <div>
+      <div className="mb-4">
+        <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg my-2">
+          <button onClick={init}>
+           Init
+          </button>
+        </div>
+      </div>
       <div className="mb-4">
         <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg my-2">
           <p>Connected Account: {account}</p>
