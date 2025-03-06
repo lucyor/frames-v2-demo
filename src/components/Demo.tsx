@@ -7,6 +7,7 @@ import { injected } from '@wagmi/connectors'
 import { getAccount } from '@wagmi/core'
 import { signMessage } from '@wagmi/core'
 import { writeContract } from '@wagmi/core'
+import VConsole from 'vconsole'
 const abi = [
   {
     type: 'function',
@@ -69,7 +70,12 @@ export default function Demo(
      
     }
   }, [])
-
+  useEffect(() => {
+    const vConsole = new VConsole()
+    return () => {
+      vConsole.destroy()
+    }
+  }, [])
   const handleSendTx = async () => {
     try {
       const result = await writeContract(config, {
