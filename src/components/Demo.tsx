@@ -129,7 +129,7 @@ export default function Demo(
   const init = async () => {
     try {
       console.log(`init`)
-      const res = await connect(config, { connector: injected() })
+      const res = await connect(config, { connector: config.connectors[0] })
       console.log(`connect res`, res)
       const account = getAccount(config)
       console.log(`get Account`, account)
