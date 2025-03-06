@@ -71,7 +71,8 @@ export const authOptions: AuthOptions = {
       }
       return session;
     },
-  }
+  },
+  secret: '0940671754'
 }
 
 export const getSession = () => getServerSession(authOptions)
