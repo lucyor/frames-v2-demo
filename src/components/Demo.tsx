@@ -21,6 +21,7 @@ import {
   useConnect,
   useSwitchChain,
   useChainId,
+  useWriteContract
 } from "wagmi";
 
 import { config } from "~/components/providers/WagmiProvider";
@@ -35,6 +36,8 @@ import { Label } from "~/components/ui/label";
 export default function Demo(
   { title }: { title?: string } = { title: "Frames v2 Demo" }
 ) {
+  const { data: hash, writeContract } = useWriteContract()
+
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [context, setContext] = useState<Context.FrameContext>();
   const [isContextOpen, setIsContextOpen] = useState(false);
@@ -84,7 +87,15 @@ export default function Demo(
     isError: isSwitchChainError,
     isPending: isSwitchChainPending,
   } = useSwitchChain();
-
+  const abi = [
+    {
+      name: 'mint',
+      type: 'function',
+      stateMutability: 'nonpayable',
+      inputs: [{ internalType: 'uint32', name: 'tokenId', type: 'uint32' }],
+      outputs: [],
+    },
+  ]
   const nextChain = useMemo(() => {
     if (chainId === base.id) {
       return optimism;
@@ -110,59 +121,60 @@ export default function Demo(
     }
   },[])
 
-  useEffect(() => {
-    // @ts-expect-error error window
-    const provider = window.ethereum 
-    console.log('provider',provider)
-    //链接钱包 获得钱包地址
-    const connectAndgetAccount = async () => {
-      const accounts = await provider.request({
-        method: "eth_requestAccounts", params: []
-      })
-      console.log('accounts:', accounts)
-    }
-    async function createCatSign() {
-      const walletProvider = provider
-      const ethersProvider = new BrowserProvider(walletProvider)
-      return await ethersProvider.getSigner()
-    }
-    function checkSign(message: string, signature: string) {
-      const recoveredAddress = ethers.verifyMessage(message, signature);
-      console.log(recoveredAddress)
-    }
-    // 签消息
-    const signMessage = async (comment: string) => {
+  // TODO:
+  // useEffect(() => {
+  //   // @ts-expect-error error window
+  //   const provider = window.ethereum 
+  //   console.log('provider',provider)
+  //   //链接钱包 获得钱包地址
+  //   const connectAndgetAccount = async () => {
+  //     const accounts = await provider.request({
+  //       method: "eth_requestAccounts", params: []
+  //     })
+  //     console.log('accounts:', accounts)
+  //   }
+  //   async function createCatSign() {
+  //     const walletProvider = provider
+  //     const ethersProvider = new BrowserProvider(walletProvider)
+  //     return await ethersProvider.getSigner()
+  //   }
+  //   function checkSign(message: string, signature: string) {
+  //     const recoveredAddress = ethers.verifyMessage(message, signature);
+  //     console.log(recoveredAddress)
+  //   }
+  //   // 签消息
+  //   const signMessage = async (comment: string) => {
 
-      const signer = await createCatSign();
-      const message = comment;
-      const signature = await signer.signMessage(message);
+  //     const signer = await createCatSign();
+  //     const message = comment;
+  //     const signature = await signer.signMessage(message);
 
-      console.log('signature:', signature)
-      console.log('message:', message)
+  //     console.log('signature:', signature)
+  //     console.log('message:', message)
 
-      checkSign(message, signature)
-      return signature;
-    }
+  //     checkSign(message, signature)
+  //     return signature;
+  //   }
 
-    // 调用合约
-    const taskSign = async (comment: string, ismetamask: boolean) => {
-      const signer = await createCatSign();
-      const abi = ['function taskSign(string memory comment) external']
-      const contract = '0x17A0ac4bbAd952F32093b8F63eEE85c4DE56E3EA'
-      const catsign = new Contract(contract, abi, signer);
-      const tx = await catsign.taskSign(comment);
+  //   // 调用合约
+  //   const taskSign = async (comment: string, ismetamask: boolean) => {
+  //     const signer = await createCatSign();
+  //     const abi = ['function taskSign(string memory comment) external']
+  //     const contract = '0x17A0ac4bbAd952F32093b8F63eEE85c4DE56E3EA'
+  //     const catsign = new Contract(contract, abi, signer);
+  //     const tx = await catsign.taskSign(comment);
      
-      return tx.hash;
-    }
-    (async()=>{
-      await connectAndgetAccount()
-      await signMessage('hello signmessage')
-      console.log(`sign message end`)
-      await taskSign('tasksign',false)
-      console.log(`task sign end`)
-    })()
+  //     return tx.hash;
+  //   }
+  //   (async()=>{
+  //     await connectAndgetAccount()
+  //     await signMessage('hello signmessage')
+  //     console.log(`sign message end`)
+  //     await taskSign('tasksign',false)
+  //     console.log(`task sign end`)
+  //   })()
 
-  }, [])
+  // }, [])
 
   useEffect(() => {
     const load = async () => {
@@ -297,20 +309,31 @@ export default function Demo(
     }
   }, [context, notificationDetails]);
 
+  // const sendTx = useCallback(() => {
+  //   sendTransaction(
+  //     {
+  //       // call yoink() on Yoink contract
+  //       to: "0x4bBFD120d9f352A0BEd7a014bd67913a2007a878",
+  //       data: "0x9846cd9efc000023c0",
+  //     },
+  //     {
+  //       onSuccess: (hash) => {
+  //         setTxHash(hash);
+  //       },
+  //     }
+  //   );
+  // }, [sendTransaction]);
   const sendTx = useCallback(() => {
-    sendTransaction(
-      {
-        // call yoink() on Yoink contract
-        to: "0x4bBFD120d9f352A0BEd7a014bd67913a2007a878",
-        data: "0x9846cd9efc000023c0",
-      },
-      {
-        onSuccess: (hash) => {
-          setTxHash(hash);
-        },
-      }
-    );
-  }, [sendTransaction]);
+    async function submit() {
+      writeContract({
+        address: '0xFBA3912Ca04dd458c843e2EE08967fC04f3579c2',
+        abi,
+        functionName: 'mint',
+        args: [BigInt('123123123')],
+      })
+    } 
+    submit()
+  },[])
 
   const signTyped = useCallback(() => {
     signTypedData({
