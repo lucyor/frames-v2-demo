@@ -146,6 +146,7 @@ export default function Demo(
   }, [])
   const handleSendTx = async () => {
     try {
+      console.log(`handleSendTx`)
       const result = await writeContract(config, {
         abi,
         address: '0x6b175474e89094c44da98b954eedeac495271d0f',
@@ -164,6 +165,7 @@ export default function Demo(
   }
   const handleSignMessage = async ()=>{
     try{
+      console.log(`handleSignMessage`)
       await signMessage(config, { message: 'hello world' })
     }catch(error){
 
