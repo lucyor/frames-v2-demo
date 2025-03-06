@@ -4,7 +4,7 @@ import {
 } from "@farcaster/frame-sdk";
 import { getUserNotificationDetails } from "~/lib/kv";
 
-const appUrl = process.env.NEXT_PUBLIC_URL || "";
+const appUrl = 'https://test-black-five-81.vercel.app';
 
 type SendFrameNotificationResult =
   | {

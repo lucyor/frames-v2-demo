@@ -1,5 +1,5 @@
 export async function GET() {
-  const appUrl = process.env.NEXT_PUBLIC_URL;
+  const appUrl = 'https://test-black-five-81.vercel.app';
 
   const config = {
     accountAssociation: {

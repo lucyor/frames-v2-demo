@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 
-const appUrl = process.env.NEXT_PUBLIC_URL;
+const appUrl = 'https://test-black-five-81.vercel.app';
 
 interface Props {
   params: Promise<{
