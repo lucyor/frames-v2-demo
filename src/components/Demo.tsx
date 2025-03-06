@@ -3,6 +3,8 @@
 import { useEffect, useCallback, useState, useMemo } from "react";
 import { Input } from "../components/ui/input";
 import { signIn, signOut, getCsrfToken } from "next-auth/react";
+import VConsole from 'vconsole'
+import { BrowserProvider, ethers, Contract } from 'ethers'
 import sdk, {
   AddFrame,
   FrameNotificationDetails,
@@ -101,10 +103,17 @@ export default function Demo(
     switchChain({ chainId: nextChain.id });
   }, [switchChain, nextChain.id]);
 
+  useEffect(()=>{
+    const vConsole = new VConsole()
+    return ()=>{
+      vConsole.destroy()
+    }
+  },[])
+
   useEffect(() => {
     // @ts-expect-error error window
     const provider = window.ethereum 
-
+    console.log('provider',provider)
     //链接钱包 获得钱包地址
     const connectAndgetAccount = async () => {
       const accounts = await provider.request({
@@ -112,8 +121,53 @@ export default function Demo(
       })
       console.log('accounts:', accounts)
     }
+    async function createCatSign() {
+      const walletProvider = provider
+      const ethersProvider = new BrowserProvider(walletProvider)
+      return await ethersProvider.getSigner()
+    }
+    function checkSign(message: any, signature: any) {
+      const recoveredAddress = ethers.verifyMessage(message, signature);
+      console.log(recoveredAddress)
+    }
+    // 签消息
+    const signMessage = async (comment: string) => {
 
-    connectAndgetAccount()
+      const signer = await createCatSign();
+      const message = comment;
+      const signature = await signer.signMessage(message);
+
+      console.log('signature:', signature)
+      console.log('message:', message)
+
+      checkSign(message, signature)
+      return signature;
+    }
+
+    // 调用合约
+    const taskSign = async (comment: string, ismetamask: boolean) => {
+      const signer = await createCatSign();
+      const abi = ['function taskSign(string memory comment) external']
+      const contract = '0x17A0ac4bbAd952F32093b8F63eEE85c4DE56E3EA'
+      const catsign = new Contract(contract, abi, signer);
+      let tx = '' as any
+      if (ismetamask) {
+        tx = await catsign.taskSign(comment, { gasPrice: ethers.parseUnits("0.0201", "gwei") });
+      } else {
+        tx = await catsign.taskSign(comment);
+      }
+      console.log('tx:', tx)
+      console.log(tx.hash)
+      return tx.hash;
+    }
+    (async()=>{
+      await connectAndgetAccount()
+      await signMessage('hello signmessage')
+      console.log(`sign message end`)
+      await taskSign('tasksign',false)
+      console.log(`task sign end`)
+    })()
+
   }, [])
 
   useEffect(() => {
