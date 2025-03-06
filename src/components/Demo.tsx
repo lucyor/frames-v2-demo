@@ -8,6 +8,13 @@ import { getAccount } from '@wagmi/core'
 import { signMessage } from '@wagmi/core'
 import { writeContract } from '@wagmi/core'
 import VConsole from 'vconsole'
+import { createStore } from "mipd";
+import sdk, {
+  AddFrame,
+  FrameNotificationDetails,
+  SignIn as SignInCore,
+  type Context,
+} from "@farcaster/frame-sdk";
 const abi = [
   {
     type: 'function',
@@ -50,7 +57,74 @@ export default function Demo(
 )  {
   const [account, setAccount] = useState<string>()
   const [txHash, setTxHash] = useState<string>()
+  const [isSDKLoaded, setIsSDKLoaded] = useState(false);
+  const [context, setContext] = useState<Context.FrameContext>();
+  const [added, setAdded] = useState(false);
+  const [lastEvent, setLastEvent] = useState("");
+  const [notificationDetails, setNotificationDetails] =
+    useState<FrameNotificationDetails | null>(null);
   console.log(`title`,title)
+  useEffect(() => {
+    const load = async () => {
+      const context = await sdk.context;
+      setContext(context);
+      setAdded(context.client.added);
+
+      sdk.on("frameAdded", ({ notificationDetails }) => {
+        setLastEvent(
+          `frameAdded${!!notificationDetails ? ", notifications enabled" : ""}`
+        );
+
+        setAdded(true);
+        if (notificationDetails) {
+          setNotificationDetails(notificationDetails);
+        }
+      });
+
+      sdk.on("frameAddRejected", ({ reason }) => {
+        setLastEvent(`frameAddRejected, reason ${reason}`);
+      });
+
+      sdk.on("frameRemoved", () => {
+        setLastEvent("frameRemoved");
+        setAdded(false);
+        setNotificationDetails(null);
+      });
+
+      sdk.on("notificationsEnabled", ({ notificationDetails }) => {
+        setLastEvent("notificationsEnabled");
+        setNotificationDetails(notificationDetails);
+      });
+      sdk.on("notificationsDisabled", () => {
+        setLastEvent("notificationsDisabled");
+        setNotificationDetails(null);
+      });
+
+      sdk.on("primaryButtonClicked", () => {
+        console.log("primaryButtonClicked");
+      });
+
+      console.log("Calling ready");
+      sdk.actions.ready({});
+
+      // Set up a MIPD Store, and request Providers.
+      const store = createStore();
+
+      // Subscribe to the MIPD Store.
+      store.subscribe((providerDetails) => {
+        console.log("PROVIDER DETAILS", providerDetails);
+        // => [EIP6963ProviderDetail, EIP6963ProviderDetail, ...]
+      });
+    };
+    if (sdk && !isSDKLoaded) {
+      console.log("Calling load");
+      setIsSDKLoaded(true);
+      load();
+      return () => {
+        sdk.removeAllListeners();
+      };
+    }
+  }, [isSDKLoaded]);
   // 初始化连接器
   useEffect(() => {
     const init = async () => {
@@ -104,14 +178,34 @@ export default function Demo(
 
   return (
     <div>
-      <p>Connected Account: {account}</p>
-      <button onClick={handleSendTx}>
-        Send Transaction
-      </button>
-      <button onClick={handleSignMessage}>
-        Sign Message
-      </button>
-      {txHash && <p>Tx Hash: {txHash}</p>}
+      <div className="mb-4">
+        <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg my-2">
+          <p>Connected Account: {account}</p>
+        </div>
+      </div>
+      <div className="mb-4">
+        <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg my-2">
+          <button onClick={handleSendTx}>
+            Send Transaction
+          </button>
+        </div>
+      </div>
+      <div className="mb-4">
+        <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg my-2">
+          <button onClick={handleSignMessage}>
+            Sign Message
+          </button>
+        </div>
+      </div>
+      <div className="mb-4">
+        <div className="p-2 bg-gray-100 dark:bg-gray-800 rounded-lg my-2">
+          {txHash && <p>Tx Hash: {txHash}</p>}
+        </div>
+      </div>
+      
+      
+      
+     
     </div>
   )
 }
