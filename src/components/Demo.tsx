@@ -1,5 +1,5 @@
 "use client";
-//@ts-nocheck
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { useEffect, useCallback, useState, useMemo } from "react";
 import { Input } from "../components/ui/input";
 import { signIn, signOut, getCsrfToken } from "next-auth/react";
