@@ -1,5 +1,5 @@
 // src/lib/wagmi-core-setup.ts
-import { createConfig, http, Connector, ConnectParameters, disconnect } from '@wagmi/core'
+import { createConfig, http, Connector, ConnectParameters, disconnect, simulateContract } from '@wagmi/core'
 import { base } from '@wagmi/core/chains'
 import { farcasterFrame } from "@farcaster/frame-wagmi-connector";
 import { connect } from '@wagmi/core'
@@ -15,6 +15,7 @@ import sdk, {
   SignIn as SignInCore,
   type Context,
 } from "@farcaster/frame-sdk";
+
 const abi = [
   {
     type: 'function',
@@ -125,6 +126,9 @@ export default function Demo(
       };
     }
   }, [isSDKLoaded]);
+
+
+
   // 初始化连接器
   const init = async () => {
     try {
@@ -147,7 +151,8 @@ export default function Demo(
   const handleSendTx = async () => {
     try {
       console.log(`handleSendTx`)
-      const result = await writeContract(config, {
+      const { connector } = getAccount(config)
+      const { request } = await simulateContract(config, {
         abi,
         address: '0x6b175474e89094c44da98b954eedeac495271d0f',
         functionName: 'transferFrom',
@@ -156,7 +161,19 @@ export default function Demo(
           '0xA0Cf798816D4b9b9866b5330EEa46a18382f251e',
           123n,
         ],
+        connector
       })
+      const result = await writeContract(config, request)
+      // const result = await writeContract(config, {
+      //   abi,
+      //   address: '0x6b175474e89094c44da98b954eedeac495271d0f',
+      //   functionName: 'transferFrom',
+      //   args: [
+      //     '0xd2135CfB216b74109775236E36d4b433F1DF507B',
+      //     '0xA0Cf798816D4b9b9866b5330EEa46a18382f251e',
+      //     123n,
+      //   ],
+      // })
       console.log(`tsx result`,result)
       setTxHash(result)
     } catch (error) {
@@ -166,13 +183,20 @@ export default function Demo(
   const handleSignMessage = async ()=>{
     try{
       console.log(`handleSignMessage`)
-      const res = await signMessage(config, { message: 'hello world' })
+      // const res = await signMessage(config, { message: 'hello world' })
+      const { connector } = getAccount(config)
+      const res = await signMessage(config, {
+        connector,
+        message: 'hello world',
+      })
       console.log(`handleSignMessage res:`,res)
     }catch(error){
 
     }
   }
-
+  if (!isSDKLoaded) {
+    return <div>Loading...</div>;
+  }
   return (
     <div>
       <div className="mb-4">
