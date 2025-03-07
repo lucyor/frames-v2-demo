@@ -166,7 +166,8 @@ export default function Demo(
   const handleSignMessage = async ()=>{
     try{
       console.log(`handleSignMessage`)
-      await signMessage(config, { message: 'hello world' })
+      const res = await signMessage(config, { message: 'hello world' })
+      console.log(`handleSignMessage res:`,res)
     }catch(error){
 
     }
